@@ -1,0 +1,5 @@
+superlists/db.sqlite3
+superlists/__pycache__
+*.pyc
+*.swp
+venv
