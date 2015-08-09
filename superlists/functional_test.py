@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import unittest
 
 class NewVistor(unittest.TestCase):
@@ -16,14 +17,29 @@ class NewVistor(unittest.TestCase):
 
         #she notices it is a "to-do" list
         self.assertIn('To-Do',self.browser.title)
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('To-Do', header_text)
         self.fail('Finish the test')
 
         # she is invited to enter a item
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(
+                inputbox.get_attribute('placeholder'),
+                'Enter a to-do item'
+        )
 
         #she types in "buy stuff" into a text box
+        inputbox.send_keys('Buy stuff')
 
         #she hits enter and the page lists "1:buy stuff" 
-
+        inputbox.send_keys(Keys.ENTER)
+        
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == '1: Buy stuff'  for row in rows)
+        )
+        
         #she enters "use stuff" in text box 
 
         # page updates to show both items
