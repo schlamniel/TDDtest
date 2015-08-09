@@ -19,7 +19,6 @@ class NewVistor(unittest.TestCase):
         self.assertIn('To-Do',self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
-        self.fail('Finish the test')
 
         # she is invited to enter a item
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -37,7 +36,8 @@ class NewVistor(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1: Buy stuff'  for row in rows)
+            any(row.text == '1: Buy stuff'  for row in rows),
+            "New to-do item did not apper in table"
         )
         
         #she enters "use stuff" in text box 
@@ -48,6 +48,7 @@ class NewVistor(unittest.TestCase):
         #with explination text
 
         #she enters the url directly and sees list
+        self.fail('Finish the test')
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
