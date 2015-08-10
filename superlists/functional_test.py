@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
+import time
 
 class NewVistor(unittest.TestCase):
     
@@ -32,18 +33,30 @@ class NewVistor(unittest.TestCase):
 
         #she hits enter and the page lists "1:buy stuff" 
         inputbox.send_keys(Keys.ENTER)
-        
+        #time.sleep(10)
+
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1: Buy stuff'  for row in rows),
-            "New to-do item did not apper in table"
-        )
+        #self.assertTrue(
+            #any(row.text == '1: Buy stuff'  for row in rows),
+            #"New to-do item did not appear in table -- it was:\n%s" %(
+            #    table.text,
+            #)    
+        #)
+        self.assertIn('1: Buy stuff', [row.text for row in rows])
         
         #she enters "use stuff" in text box 
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Use stuff')
+        inputbox.send_keys(Keys.ENTER)
 
         # page updates to show both items
-
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(
+            '2: Use stuff', [row.text for row in rows]
+        )
+        
         #she wonders if site will save list, she sees a unique url 
         #with explination text
 
