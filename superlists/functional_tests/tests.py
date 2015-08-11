@@ -36,21 +36,48 @@ class NewVistor(LiveServerTestCase):
 
         #she types in "buy stuff" into a text box
         inputbox.send_keys('Buy stuff')
-
-        #she hits enter and the page lists "1:buy stuff" 
+               #she hits enter and the page lists "1:buy stuff" 
         inputbox.send_keys(Keys.ENTER)
+        edith_list_url = self.browser.current_url
+        self.assertRegex(edith_list_url, '/lists/.+')
+        self.check_for_row_in_list_table('1: Buy stuff')
+
         #time.sleep(10)
-        #she enters "use stuff" in text box 
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Use stuff')
         inputbox.send_keys(Keys.ENTER)
        
+        # The page updates again, and now shows both items on her list
         self.check_for_row_in_list_table('1: Buy stuff')
         self.check_for_row_in_list_table('2: Use stuff')
-        #she wonders if site will save list, she sees a unique url 
-        #with explination text
+        
+        # new user Francis comes along
 
-        #she enters the url directly and sees list
+        #use a new browser session to make sure there is no residual info
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        #Francis visits the home page. There is no sign of Edith
+        self.brower.get(self.live_server_url)
+        page_text = self.browser.find_element_by_taag_name('body').text
+        self.assertNotIn('Buy stuff',page_text)
+        self.assertNotIn('Use stuff', page_text)
+
+        #Fransis starts a new list 
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+
+        #new url
+        francis_list_url = self.browser.current_url
+        self.assertRegex(francis_list_url, '/lists/.+')
+        self.assertNotEqual(francis_list_url, edith_list_url)
+
+        #check for Edith's list
+        page_text = self.browser.find_element_by_tag_name('bod').text
+        self.assertNotIn('Buy Stuff', page_text)
+        self.assertIn('Buy milk', page_text)
+        
         self.fail('Finish the test')
 
 if __name__ == '__main__':
