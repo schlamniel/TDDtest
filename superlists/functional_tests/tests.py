@@ -1,9 +1,10 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
-class NewVistor(unittest.TestCase):
+class NewVistor(LiveServerTestCase):
     
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -12,9 +13,14 @@ class NewVistor(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self,row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retive_it(self):
         #Elliechecks out new app home page
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         #she notices it is a "to-do" list
         self.assertIn('To-Do',self.browser.title)
@@ -34,29 +40,13 @@ class NewVistor(unittest.TestCase):
         #she hits enter and the page lists "1:buy stuff" 
         inputbox.send_keys(Keys.ENTER)
         #time.sleep(10)
-
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        #self.assertTrue(
-            #any(row.text == '1: Buy stuff'  for row in rows),
-            #"New to-do item did not appear in table -- it was:\n%s" %(
-            #    table.text,
-            #)    
-        #)
-        self.assertIn('1: Buy stuff', [row.text for row in rows])
-        
         #she enters "use stuff" in text box 
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Use stuff')
         inputbox.send_keys(Keys.ENTER)
-
-        # page updates to show both items
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '2: Use stuff', [row.text for row in rows]
-        )
-        
+       
+        self.check_for_row_in_list_table('1: Buy stuff')
+        self.check_for_row_in_list_table('2: Use stuff')
         #she wonders if site will save list, she sees a unique url 
         #with explination text
 
