@@ -58,8 +58,8 @@ class NewVistor(LiveServerTestCase):
         self.browser = webdriver.Firefox()
 
         #Francis visits the home page. There is no sign of Edith
-        self.brower.get(self.live_server_url)
-        page_text = self.browser.find_element_by_taag_name('body').text
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy stuff',page_text)
         self.assertNotIn('Use stuff', page_text)
 
